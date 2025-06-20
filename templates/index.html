@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+
+{% block title %}Accueil - Bot Discord Tickets{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">
+        <i class="bi bi-house-door"></i>
+        Accueil
+    </h1>
+</div>
+
+<div class="row">
+    <!-- Statut du Bot -->
+    <div class="col-lg-8">
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="bi bi-robot"></i>
+                    Statut du Bot Discord
+                </h5>
+                <span class="badge {% if bot_status.connected %}bg-success{% else %}bg-danger{% endif %}">
+                    {% if bot_status.connected %}En ligne{% else %}Hors ligne{% endif %}
+                </span>
+            </div>
+            <div class="card-body">
+                {% if bot_status.connected %}
+                    <div class="row text-center">
+                        <div class="col-md-4">
+                            <div class="border-end">
+                                <h3 class="text-success">{{ bot_status.guilds }}</h3>
+                                <p class="text-muted mb-0">Serveurs connectés</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="border-end">
+                                <h3 class="text-primary">
+                                    <i class="bi bi-check-circle"></i>
+                                </h3>
+                                <p class="text-muted mb-0">Système actif</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <h3 class="text-info">24/7</h3>
+                            <p class="text-muted mb-0">Disponibilité</p>
+                        </div>
+                    </div>
+                    <hr>
+                    <p class="text-success mb-0">
+                        <i class="bi bi-check-circle"></i>
+                        Le bot est opérationnel et prêt à traiter les tickets de support.
+                    </p>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="bi bi-exclamation-triangle text-warning" style="font-size: 3rem;"></i>
+                        <h4 class="mt-3">Bot hors ligne</h4>
+                        <p class="text-muted">Le bot Discord n'est pas connecté actuellement.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Informations -->
+    <div class="col-lg-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-info-circle"></i>
+                    Informations
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <small class="text-muted">Dernière mise à jour</small>
+                    <div>{{ bot_status.last_update or 'Jamais' }}</div>
+                </div>
+                <div class="mb-3">
+                    <small class="text-muted">Hébergement</small>
+                    <div>Render (24h/7j)</div>
+                </div>
+                <div>
+                    <small class="text-muted">Version</small>
+                    <div>v1.0.0</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Fonctionnalités -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-gear"></i>
+                    Fonctionnalités du Bot
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 col-lg-3 mb-3">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-shrink-0">
+                                <i class="bi bi-ticket-perforated text-primary" style="font-size: 2rem;"></i>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h6 class="mb-1">Système de Tickets</h6>
+                                <p class="text-muted small mb-0">Création automatique de tickets avec boutons interactifs</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-3 mb-3">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-shrink-0">
+                                <i class="bi bi-shield-check text-success" style="font-size: 2rem;"></i>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h6 class="mb-1">Vérification</h6>
+                                <p class="text-muted small mb-0">Processus de vérification avec options multiples</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-3 mb-3">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-shrink-0">
+                                <i class="bi bi-headset text-info" style="font-size: 2rem;"></i>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h6 class="mb-1">Support Général</h6>
+                                <p class="text-muted small mb-0">Aide et assistance pour tous types de problèmes</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-3 mb-3">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-shrink-0">
+                                <i class="bi bi-cart text-warning" style="font-size: 2rem;"></i>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h6 class="mb-1">Achat de Contenu</h6>
+                                <p class="text-muted small mb-0">Gestion des commandes et achats de contenu</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Instructions -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-book"></i>
+                    Comment utiliser le bot
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6><i class="bi bi-1-circle text-primary"></i> Configuration (Admins)</h6>
+                        <p class="text-muted">Utilisez la commande <code>/ticket</code> pour configurer le système de tickets dans votre serveur Discord.</p>
+                        
+                        <h6><i class="bi bi-2-circle text-primary"></i> Création de tickets</h6>
+                        <p class="text-muted">Les membres cliquent sur les boutons pour créer des tickets selon leurs besoins.</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6><i class="bi bi-3-circle text-primary"></i> Gestion</h6>
+                        <p class="text-muted">Les administrateurs peuvent fermer ou supprimer les tickets directement depuis Discord.</p>
+                        
+                        <h6><i class="bi bi-4-circle text-primary"></i> Suivi</h6>
+                        <p class="text-muted">Consultez ce tableau de bord pour suivre l'activité et les statistiques.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Actualiser les stats toutes les 30 secondes
+    setInterval(function() {
+        location.reload();
+    }, 60000); // Recharger toute la page toutes les minutes
+</script>
+{% endblock %}
