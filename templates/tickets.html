@@ -1,0 +1,265 @@
+{% extends "base.html" %}
+
+{% block title %}Tickets - Bot Discord Tickets{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">
+        <i class="bi bi-ticket-perforated"></i>
+        Gestion des Tickets
+    </h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="location.reload()">
+                <i class="bi bi-arrow-clockwise"></i>
+                Actualiser
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Filtres -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <select class="form-select" id="statusFilter" onchange="filterTickets()">
+            <option value="">Tous les statuts</option>
+            <option value="open">Ouverts</option>
+            <option value="closed">Fermés</option>
+            <option value="deleted">Supprimés</option>
+        </select>
+    </div>
+    <div class="col-md-6">
+        <select class="form-select" id="reasonFilter" onchange="filterTickets()">
+            <option value="">Toutes les raisons</option>
+            <option value="Vérification">Vérification</option>
+            <option value="Questions">Questions</option>
+            <option value="Achat">Achat</option>
+            <option value="Autre">Autre</option>
+        </select>
+    </div>
+</div>
+
+<!-- Liste des tickets -->
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">
+            <i class="bi bi-list-ul"></i>
+            Liste des tickets
+        </h5>
+    </div>
+    <div class="card-body">
+        {% if tickets %}
+        <div class="table-responsive">
+            <table class="table table-hover" id="ticketsTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Utilisateur</th>
+                        <th>Raison</th>
+                        <th>Statut</th>
+                        <th>Créé le</th>
+                        <th>Fermé le</th>
+                        <th>Serveur</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for channel_id, ticket in tickets %}
+                    <tr data-status="{{ ticket.status }}" data-reason="{{ ticket.reason }}">
+                        <td>
+                            <code>{{ channel_id }}</code>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-person-circle me-2"></i>
+                                <div>
+                                    <div class="fw-bold">ID: {{ ticket.user_id }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            {% if ticket.reason == "Vérification" %}
+                                <span class="badge bg-warning">
+                                    <i class="bi bi-shield-check"></i>
+                                    {{ ticket.reason }}
+                                </span>
+                            {% elif ticket.reason == "Support général" %}
+                                <span class="badge bg-info">
+                                    <i class="bi bi-headset"></i>
+                                    {{ ticket.reason }}
+                                </span>
+                            {% elif "Achat" in ticket.reason %}
+                                <span class="badge bg-success">
+                                    <i class="bi bi-cart"></i>
+                                    {{ ticket.reason }}
+                                </span>
+                            {% else %}
+                                <span class="badge bg-secondary">
+                                    <i class="bi bi-question-circle"></i>
+                                    {{ ticket.reason }}
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if ticket.status == "open" %}
+                                <span class="badge bg-success">
+                                    <i class="bi bi-folder-open"></i>
+                                    Ouvert
+                                </span>
+                            {% elif ticket.status == "closed" %}
+                                <span class="badge bg-danger">
+                                    <i class="bi bi-folder-x"></i>
+                                    Fermé
+                                </span>
+                            {% elif ticket.status == "deleted" %}
+                                <span class="badge bg-dark">
+                                    <i class="bi bi-trash"></i>
+                                    Supprimé
+                                </span>
+                            {% else %}
+                                <span class="badge bg-secondary">
+                                    {{ ticket.status }}
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if ticket.created_at %}
+                                <div class="small">
+                                    {{ ticket.created_at[:19].replace('T', ' ') }}
+                                </div>
+                            {% else %}
+                                <span class="text-muted">Non disponible</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if ticket.closed_at %}
+                                <div class="small">
+                                    {{ ticket.closed_at[:19].replace('T', ' ') }}
+                                </div>
+                            {% else %}
+                                <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <code>{{ ticket.guild_id }}</code>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <i class="bi bi-inbox text-muted" style="font-size: 4rem;"></i>
+            <h4 class="mt-3">Aucun ticket trouvé</h4>
+            <p class="text-muted">Les tickets créés apparaîtront ici une fois que les utilisateurs commenceront à utiliser le bot.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Statistiques rapides -->
+{% if tickets %}
+<div class="row mt-4">
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h5 class="card-title text-primary" id="totalCount">{{ tickets|length }}</h5>
+                <p class="card-text">Total</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h5 class="card-title text-success" id="openCount">
+                    {{ tickets|selectattr('1.status', 'equalto', 'open')|list|length }}
+                </h5>
+                <p class="card-text">Ouverts</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h5 class="card-title text-danger" id="closedCount">
+                    {{ tickets|selectattr('1.status', 'equalto', 'closed')|list|length }}
+                </h5>
+                <p class="card-text">Fermés</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h5 class="card-title text-dark" id="deletedCount">
+                    {{ tickets|selectattr('1.status', 'equalto', 'deleted')|list|length }}
+                </h5>
+                <p class="card-text">Supprimés</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+function filterTickets() {
+    const statusFilter = document.getElementById('statusFilter').value;
+    const reasonFilter = document.getElementById('reasonFilter').value;
+    const table = document.getElementById('ticketsTable');
+    
+    if (!table) return;
+    
+    const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+    let visibleCount = 0;
+    let openCount = 0;
+    let closedCount = 0;
+    let deletedCount = 0;
+    
+    for (let i = 0; i < rows.length; i++) {
+        const row = rows[i];
+        const status = row.getAttribute('data-status');
+        const reason = row.getAttribute('data-reason');
+        
+        let showRow = true;
+        
+        if (statusFilter && status !== statusFilter) {
+            showRow = false;
+        }
+        
+        if (reasonFilter && reason !== reasonFilter) {
+            showRow = false;
+        }
+        
+        if (showRow) {
+            row.style.display = '';
+            visibleCount++;
+            
+            // Compter les statuts
+            if (status === 'open') openCount++;
+            else if (status === 'closed') closedCount++;
+            else if (status === 'deleted') deletedCount++;
+        } else {
+            row.style.display = 'none';
+        }
+    }
+    
+    // Mettre à jour les compteurs
+    const totalCountElement = document.getElementById('totalCount');
+    const openCountElement = document.getElementById('openCount');
+    const closedCountElement = document.getElementById('closedCount');
+    const deletedCountElement = document.getElementById('deletedCount');
+    
+    if (totalCountElement) totalCountElement.textContent = visibleCount;
+    if (openCountElement) openCountElement.textContent = openCount;
+    if (closedCountElement) closedCountElement.textContent = closedCount;
+    if (deletedCountElement) deletedCountElement.textContent = deletedCount;
+}
+
+// Initialiser les filtres au chargement de la page
+document.addEventListener('DOMContentLoaded', function() {
+    filterTickets();
+});
+</script>
+{% endblock %}
