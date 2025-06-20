@@ -35,11 +35,12 @@ class TicketSystem:
                 guild.me: discord.PermissionOverwrite(read_messages=True, send_messages=True, manage_messages=True)
             }
             
-            # Ajouter les permissions pour les rôles administrateurs
-            settings = self.config.load_settings()
-            admin_roles = settings.get("admin_roles", ["Admin", "Modérateur", "Staff"])
-            for role in guild.roles:
-                if role.name in admin_roles:
+            # Ajouter les permissions pour les rôles de support
+            guild_config = self.config.get_guild_config(guild.id)
+            support_roles = guild_config.get("support_roles", [])
+            for role_id in support_roles:
+                role = guild.get_role(int(role_id))
+                if role:
                     overwrites[role] = discord.PermissionOverwrite(read_messages=True, send_messages=True, manage_messages=True)
             
             # Créer le salon
@@ -139,43 +140,45 @@ class TicketSystem:
         
         embed.set_footer(text="Support Ticket • Réponse rapide")
         
-        # Mentionner les rôles de support
-        guild_config = self.config.get_guild_config(interaction.guild.id)
+        # Récupérer la configuration du serveur
+        guild_config = self.config.get_guild_config(channel.guild.id)
         support_roles = guild_config.get("support_roles", [])
         
-        mention_text = ""
+        # Créer les mentions (toujours mentionner l'utilisateur + rôles de support)
+        mentions = [user.mention]
+        
         if support_roles:
-            mentions = []
             for role_id in support_roles:
-                role = interaction.guild.get_role(int(role_id))
+                role = channel.guild.get_role(int(role_id))
                 if role:
                     mentions.append(role.mention)
-            if mentions:
-                mention_text = " ".join(mentions)
         
-        # Vue de gestion du ticket
+        mention_text = " ".join(mentions)
+        
+        # Vue de gestion du ticket avec bouton fermer
         view = TicketManagementView(self)
         
-        # Envoyer le message d'accueil
-        await channel.send(embed=embed, view=view)
-        
-        # Envoyer les mentions séparément si nécessaire
-        if mention_text:
-            await channel.send(mention_text)
+        # Envoyer le message d'accueil avec mentions et bouton
+        await channel.send(
+            content=mention_text,
+            embed=embed, 
+            view=view
+        )
     
     async def close_ticket(self, channel, closed_by):
         """Fermer un ticket"""
         # Fermer le ticket dans la base de données
-        ticket = self.config.db.close_ticket(channel.id, closed_by.id)
+        self.config.db.close_ticket(channel.id, closed_by.id)
         
+        # Récupérer les informations du ticket
+        ticket = self.config.db.get_ticket(channel.id)
         if ticket:
-            
             # Modifier les permissions pour fermer le ticket
-            overwrites = channel.overwrites
-            for target, overwrite in overwrites.items():
-                if isinstance(target, discord.Member) and target.id == tickets_data[channel_id]["user_id"]:
-                    overwrite.send_messages = False
-                    await channel.set_permissions(target, overwrite=overwrite)
+            user = channel.guild.get_member(int(ticket.user_id))
+            if user:
+                overwrite = channel.overwrites_for(user)
+                overwrite.send_messages = False
+                await channel.set_permissions(user, overwrite=overwrite)
             
             # Message de fermeture
             embed = discord.Embed(
@@ -191,14 +194,8 @@ class TicketSystem:
     
     async def delete_ticket(self, channel):
         """Supprimer un ticket"""
-        tickets_data = self.config.load_tickets()
-        channel_id = str(channel.id)
-        
-        if channel_id in tickets_data:
-            # Marquer comme supprimé
-            tickets_data[channel_id]["status"] = "deleted"
-            tickets_data[channel_id]["deleted_at"] = datetime.now().isoformat()
-            self.config.save_tickets(tickets_data)
+        # Marquer comme supprimé dans la base de données
+        self.config.db.delete_ticket(channel.id)
         
         # Supprimer le salon après un court délai
         await asyncio.sleep(2)
