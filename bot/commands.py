@@ -52,7 +52,7 @@ def setup_commands(bot, config, ticket_system):
         # Créer l'embed du panneau de tickets
         embed = discord.Embed(
             title="🔥 𝗕𝗼𝘂𝘁𝗶𝗾𝘂𝗲 𝗡𝗦𝗙𝗪  d'Axo - 𝗣𝗹𝗮𝗶𝘀𝗶𝗿𝘀 𝗶𝗻𝘁𝗶𝗺𝗲𝘀 🔥",
-            description="❥๑━━━━━━━━━━━━━━━๑❥\nBienvenue, petit(e) coquin(e)… 💋\nIci tu peux craquer pour des contenus et services NSFW personnalisés, ta dose de plaisir sur mesure !\n💌 Pour commander, poser tes questions ou contacter le support tu peux sélectionner la raison pour laquel tu souhaites ouvrir un ticket\nOn est là pour toi, prêt·e à satisfaire toutes tes envies, rapido !\n❥๑━━━━━━━━━━━━━━━๑❥\n⚠️ Interdit aux moins de 18 ans. Respecte les règles, reste sage… ou pas. 😉",
+            description="❥๑━━━━━━━━━━━━━━━๑❥\nBienvenue, petit(e) coquin(e)… 💋\nIci tu peux craquer pour des contenus et services NSFW personnalisés, ta dose de plaisir sur mesure !\n💌 Pour commander, poser tes questions ou contacter le support tu peux sélectionner la raison pour laquel tu souhaites ouvrir un ticket\nOn est là pour toi, prêt·e à satisfaire toutes tes envies, rapido !\n❥๑━━━━━━━━━━━━━━━๑❥\n⚠️ *Interdit aux moins de 18 ans. Respecte les règles, reste sage… ou pas.* 😉",
             color=discord.Color.from_rgb(255, 20, 147)
         )
         
