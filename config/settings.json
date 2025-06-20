@@ -1,0 +1,19 @@
+{
+  "guilds": {
+    "1384936555893755994": {
+      "ticket_channel_id": 1384939238763663440,
+      "ticket_reasons": [
+        "Vérification",
+        "Achats",
+        "Questions",
+        "Autres"
+      ]
+    }
+  },
+  "admin_roles": [
+    "Admin",
+    "Modérateur",
+    "Staff",
+    "Administrateur"
+  ]
+}
