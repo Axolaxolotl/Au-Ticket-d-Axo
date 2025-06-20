@@ -49,7 +49,8 @@ class DatabaseManager:
                 guild = Guild(id=str(guild_id))
                 db.add(guild)
             
-            guild.ticket_channel_id = config.get("ticket_channel_id")
+            if "ticket_channel_id" in config:
+                guild.ticket_channel_id = config["ticket_channel_id"]
             
             if "support_roles" in config:
                 guild.support_roles = json.dumps(config["support_roles"])
