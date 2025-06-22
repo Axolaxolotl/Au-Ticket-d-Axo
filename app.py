@@ -68,13 +68,14 @@ def dashboard():
 def tickets():
     """Page des tickets"""
     tickets_data = config.load_tickets()
-    
+
     # Trier les tickets par date de création (plus récents en premier)
     sorted_tickets = sorted(tickets_data.items(), 
-                          key=lambda x: x[1].get("created_at", ""), 
-                          reverse=True)
-    
-    return render_template('tickets.html', tickets=sorted_tickets)
+                            key=lambda x: x[1].get("created_at", ""), 
+                            reverse=True)
+
+    update_bot_status()
+    return render_template('tickets.html', tickets=sorted_tickets, bot_status=bot_status)
 
 @app.route('/api/bot-status')
 def api_bot_status():
