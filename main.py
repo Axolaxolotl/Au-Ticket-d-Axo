@@ -26,11 +26,7 @@ async def on_ready():
     except Exception as e:
         print(f"Erreur lors de la synchronisation: {e}")
 
-@bot.event
-async def on_interaction(interaction):
-    """Gérer les interactions des boutons"""
-    if interaction.type == discord.InteractionType.component:
-        await ticket_system.handle_button_interaction(interaction)
+# ✅ Interaction manuelle supprimée — Discord gère les vues tout seul
 
 async def main():
     # Configuration des commandes
@@ -42,6 +38,12 @@ async def main():
         print("⚠️  ATTENTION: Veuillez définir la variable d'environnement DISCORD_TOKEN")
         print("   Exemple: export DISCORD_TOKEN='votre_token_ici'")
         return
+    
+    await bot.start(token)
+
+if __name__ == "__main__":
+    asyncio.run(main())
+
     
     await bot.start(token)
 
